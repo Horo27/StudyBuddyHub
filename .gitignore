@@ -5,6 +5,7 @@
 *.user
 *.suo
 .vscode/
+.claude
 
 # Angular / Node
 **/node_modules/
