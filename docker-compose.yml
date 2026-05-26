@@ -7,8 +7,7 @@ services:
       POSTGRES_DB: StudyBuddyHubDb
       POSTGRES_USER: sbh
       POSTGRES_PASSWORD: "StudyBuddy@2024!"   # change in production
-    ports:
-      - "5432:5432"                     # expose for local dev tools (e.g. pgAdmin)
+    # portul 5432 nu e expus pe host — API-ul se conectează intern prin rețeaua Docker
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -33,7 +32,7 @@ services:
       Jwt__Issuer: "StudyBuddyHub"
       Jwt__Audience: "StudyBuddyHub"
       # CORS — must match the origin the browser uses to reach the frontend
-      FrontendUrl: "http://localhost"
+      FrontendUrl: "http://localhost:8080"
     ports:
       - "5117:8080"                     # also reachable directly for testing / Swagger
     depends_on:
@@ -47,7 +46,7 @@ services:
       context: ./study-buddy-hub-frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"                         # http://localhost
+      - "8080:80"                       # http://localhost:8080
     depends_on:
       - api
     restart: unless-stopped
