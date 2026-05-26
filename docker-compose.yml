@@ -1,0 +1,57 @@
+services:
+
+  # ── SQL Server 2022 ──────────────────────────────────────────────────────────
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "StudyBuddy@2024!"   # change in production
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"                     # expose for local dev tools (e.g. SSMS)
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      # sqlcmd path in SQL Server 2022 image
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'StudyBuddy@2024!' -Q 'SELECT 1' -b -C"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 45s               # SQL Server takes ~30s to fully start
+
+  # ── .NET 10 REST API ─────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .                        # solution root (needs all 3 projects)
+      dockerfile: StudyBuddyHub.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: "8080"
+      # Connection string — overrides the LocalDB default in appsettings.json
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=StudyBuddyHubDb;User Id=sa;Password=StudyBuddy@2024!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      # JWT settings — change Jwt__Key to a long random secret in production!
+      Jwt__Key: "superSecretKey@345superSecretKey@345"
+      Jwt__Issuer: "StudyBuddyHub"
+      Jwt__Audience: "StudyBuddyHub"
+      # CORS — must match the origin the browser uses to reach the frontend
+      FrontendUrl: "http://localhost"
+    ports:
+      - "5117:8080"                     # also reachable directly for testing / Swagger
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure                 # retry if DB wasn't ready on first attempt
+
+  # ── Angular 19 + Nginx ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./study-buddy-hub-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"                         # http://localhost
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  sqldata:                              # persists DB data across container restarts

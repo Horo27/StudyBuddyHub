@@ -1,0 +1,30 @@
+# Build artifacts (rebuilt inside the container)
+**/bin/
+**/obj/
+**/out/
+
+# IDE & tooling
+**/.vs/
+**/.vscode/
+**/.idea/
+**/.claude/
+*.user
+*.suo
+
+# Node (not needed for the .NET build context)
+**/node_modules/
+**/dist/
+**/.angular/
+
+# Test project (not deployed)
+StudyBuddyHub.Tests/
+
+# Docker files themselves
+docker-compose*.yml
+**/Dockerfile
+**/nginx.conf
+
+# Secrets & logs
+*.log
+*.env
+appsettings.Production.json
