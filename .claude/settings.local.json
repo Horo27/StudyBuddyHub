@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"D:\\\\Alex\\\\Facultate\\\\Anul III\\\\DAW\\\\Studdy\\\\Study-Buddy-Hub\" -Force)",
+      "Bash(Select-Object Name, FullName, Attributes)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Alex\\\\Facultate\\\\Anul III\\\\DAW\\\\Studdy\\\\Study-Buddy-Hub\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-List)"
+    ]
+  }
+}
