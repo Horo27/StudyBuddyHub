@@ -1,55 +1,62 @@
+name: student-StudyBuddyHub
+
 services:
 
-  # ── PostgreSQL 17 (~100MB RAM vs ~1.5GB pentru SQL Server) ──────────────────
+  # ── PostgreSQL 17 ────────────────────────────────────────────────────────────
   db:
     image: postgres:17-alpine
+    container_name: student-hororoi-db
     environment:
       POSTGRES_DB: StudyBuddyHubDb
       POSTGRES_USER: sbh
-      POSTGRES_PASSWORD: "StudyBuddy@2024!"   # change in production
-    # portul 5432 nu e expus pe host — API-ul se conectează intern prin rețeaua Docker
+      POSTGRES_PASSWORD: "StudyBuddy@2024!"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sbh -d StudyBuddyHubDb"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s                 # Postgres pornește în ~5s
+      start_period: 10s
+    networks: [studlab_net]
+    restart: unless-stopped
 
   # ── .NET 10 REST API ─────────────────────────────────────────────────────────
   api:
     build:
-      context: .                        # solution root (needs all 3 projects)
+      context: .
       dockerfile: StudyBuddyHub.Api/Dockerfile
+    container_name: student-hororoi-api
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_HTTP_PORTS: "8080"
-      # Connection string — overrides the LocalDB default in appsettings.json
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=StudyBuddyHubDb;Username=sbh;Password=StudyBuddy@2024!"
-      # JWT settings — change Jwt__Key to a long random secret in production!
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=student-hororoi-db;Port=5432;Database=StudyBuddyHubDb;Username=sbh;Password=StudyBuddy@2024!"
       Jwt__Key: "superSecretKey@345superSecretKey@345"
       Jwt__Issuer: "StudyBuddyHub"
       Jwt__Audience: "StudyBuddyHub"
-      # CORS — must match the origin the browser uses to reach the frontend
-      FrontendUrl: "http://localhost:8081"
-    ports:
-      - "5117:8080"                     # also reachable directly for testing / Swagger
+      FrontendUrl: "https://StudyBuddyHub.student-dev.ro"
+    expose: ["8080"]                    # NU ports: — nginx-ul cursului face routing-ul
     depends_on:
       db:
         condition: service_healthy
-    restart: on-failure                 # retry if DB wasn't ready on first attempt
+    networks: [studlab_net]
+    restart: unless-stopped
 
   # ── Angular 19 + Nginx ───────────────────────────────────────────────────────
   frontend:
     build:
       context: ./study-buddy-hub-frontend
       dockerfile: Dockerfile
-    ports:
-      - "8081:80"                       # http://localhost:8081
-    depends_on:
-      - api
+    container_name: student-hororoi-frontend
+    expose: ["80"]                      # NU ports: — nginx-ul cursului face routing-ul
+    depends_on: [api]
+    networks: [studlab_net]
     restart: unless-stopped
 
 volumes:
-  pgdata:                               # persists DB data across container restarts
+  db_data:
+
+networks:
+  studlab_net:
+    external: true
+    name: studlab_net
