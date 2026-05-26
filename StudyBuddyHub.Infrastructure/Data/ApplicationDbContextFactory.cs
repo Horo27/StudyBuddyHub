@@ -10,10 +10,11 @@ namespace StudyBuddyHub.Infrastructure.Data
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            // Must match Program.cs so the model snapshot is identical at design-time and runtime
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            // For design time, we don't need a real connection string if we just want to create migrations
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=StudyBuddyHubDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=StudyBuddyHubDb;Username=postgres;Password=postgres");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

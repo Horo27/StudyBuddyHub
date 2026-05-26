@@ -53,7 +53,7 @@ namespace StudyBuddyHub.Infrastructure.Data
             builder.Entity<StudyRequest>()
                 .HasIndex(r => new { r.RequesterId, r.OfferId })
                 .IsUnique()
-                .HasFilter("[Status] IN (0, 1)"); // Prevent multiple active requests
+                .HasFilter("\"Status\" IN (0, 1)"); // Prevent multiple active requests
         }
     }
 }

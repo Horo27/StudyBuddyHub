@@ -24,6 +24,10 @@ RUN dotnet publish StudyBuddyHub.Api/StudyBuddyHub.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
+# Npgsql needs libgssapi for GSSAPI/Kerberos support (logs error without it)
+RUN apt-get update && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 
 # .NET 8+ containers listen on 8080 by default (not 5117)

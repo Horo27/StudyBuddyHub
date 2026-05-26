@@ -36,14 +36,7 @@ namespace StudyBuddyHub.Infrastructure.Data
 
         public static async Task InitializeAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            if (context.Database.IsSqlServer())
-            {
-                await context.Database.MigrateAsync();
-            }
-            else
-            {
-                await context.Database.EnsureCreatedAsync();
-            }
+            await context.Database.MigrateAsync();
 
             string[] roles = { "Admin", "Student" };
             foreach (var role in roles)

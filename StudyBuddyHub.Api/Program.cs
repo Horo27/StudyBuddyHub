@@ -15,6 +15,9 @@ using StudyBuddyHub.Infrastructure.Repositories;
 using StudyBuddyHub.Infrastructure.Services;
 using System.Text;
 
+// Required for Npgsql 6+: treat DateTime as UTC without explicit Kind annotation
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -52,7 +55,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=(localdb)\\mssqllocaldb;Database=StudyBuddyHubDb;Trusted_Connection=True;MultipleActiveResultSets=true"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Host=localhost;Port=5432;Database=StudyBuddyHubDb;Username=postgres;Password=postgres"));
 
 // Use AddIdentityCore so it does NOT register cookie auth schemes.
 // AddIdentity would set DefaultAuthenticateScheme = "Identity.Application" (cookie),

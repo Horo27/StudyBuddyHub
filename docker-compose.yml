@@ -1,23 +1,22 @@
 services:
 
-  # ── SQL Server 2022 ──────────────────────────────────────────────────────────
+  # ── PostgreSQL 17 (~100MB RAM vs ~1.5GB pentru SQL Server) ──────────────────
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:17-alpine
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "StudyBuddy@2024!"   # change in production
-      MSSQL_PID: "Express"
+      POSTGRES_DB: StudyBuddyHubDb
+      POSTGRES_USER: sbh
+      POSTGRES_PASSWORD: "StudyBuddy@2024!"   # change in production
     ports:
-      - "1433:1433"                     # expose for local dev tools (e.g. SSMS)
+      - "5432:5432"                     # expose for local dev tools (e.g. pgAdmin)
     volumes:
-      - sqldata:/var/opt/mssql
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      # sqlcmd path in SQL Server 2022 image
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'StudyBuddy@2024!' -Q 'SELECT 1' -b -C"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 45s               # SQL Server takes ~30s to fully start
+      test: ["CMD-SHELL", "pg_isready -U sbh -d StudyBuddyHubDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s                 # Postgres pornește în ~5s
 
   # ── .NET 10 REST API ─────────────────────────────────────────────────────────
   api:
@@ -28,7 +27,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_HTTP_PORTS: "8080"
       # Connection string — overrides the LocalDB default in appsettings.json
-      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=StudyBuddyHubDb;User Id=sa;Password=StudyBuddy@2024!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=StudyBuddyHubDb;Username=sbh;Password=StudyBuddy@2024!"
       # JWT settings — change Jwt__Key to a long random secret in production!
       Jwt__Key: "superSecretKey@345superSecretKey@345"
       Jwt__Issuer: "StudyBuddyHub"
@@ -54,4 +53,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  sqldata:                              # persists DB data across container restarts
+  pgdata:                               # persists DB data across container restarts
