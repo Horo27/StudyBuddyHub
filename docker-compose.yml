@@ -32,7 +32,7 @@ services:
       Jwt__Issuer: "StudyBuddyHub"
       Jwt__Audience: "StudyBuddyHub"
       # CORS — must match the origin the browser uses to reach the frontend
-      FrontendUrl: "http://localhost:8080"
+      FrontendUrl: "http://localhost:8081"
     ports:
       - "5117:8080"                     # also reachable directly for testing / Swagger
     depends_on:
@@ -46,7 +46,7 @@ services:
       context: ./study-buddy-hub-frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:80"                       # http://localhost:8080
+      - "8081:80"                       # http://localhost:8081
     depends_on:
       - api
     restart: unless-stopped
