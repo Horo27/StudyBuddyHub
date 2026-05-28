@@ -275,8 +275,8 @@ export class OfferFormComponent implements OnInit {
     if (this.isEditMode && this.offerId) {
       this.offersService.update(this.offerId, {
         title: title!, description: description!,
-        subjectId: subjectId!, level: level!, sessionType: sessionType!,
-        price: price!, location: location || undefined, isActive: isActive!
+        subjectId: +subjectId!, level: +level!, sessionType: +sessionType!,
+        price: +price!, location: location || undefined, isActive: isActive!
       }).subscribe({
         next: () => {
           this.snackBar.open('Ofertă actualizată!', 'OK', { duration: 3000 });
@@ -287,8 +287,8 @@ export class OfferFormComponent implements OnInit {
     } else {
       this.offersService.create({
         title: title!, description: description!,
-        subjectId: subjectId!, level: level!, sessionType: sessionType!,
-        price: price!, location: location || undefined
+        subjectId: +subjectId!, level: +level!, sessionType: +sessionType!,
+        price: +price!, location: location || undefined
       }).subscribe({
         next: offer => {
           this.snackBar.open('Ofertă publicată!', 'OK', { duration: 3000 });
