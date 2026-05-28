@@ -1,0 +1,10 @@
+name: student-StudyBuddyHub
+
+services:
+  api:
+    ports:
+      - "8080:8080"
+
+  frontend:
+    ports:
+      - "4200:80"

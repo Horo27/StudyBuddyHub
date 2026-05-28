@@ -35,7 +35,7 @@ services:
       Jwt__Issuer: "StudyBuddyHub"
       Jwt__Audience: "StudyBuddyHub"
       FrontendUrl: "https://StudyBuddyHub.student-dev.ro"
-    expose: ["8080"]                    # NU ports: — nginx-ul cursului face routing-ul
+    expose: ["8080"]
     depends_on:
       db:
         condition: service_healthy
@@ -48,7 +48,7 @@ services:
       context: ./study-buddy-hub-frontend
       dockerfile: Dockerfile
     container_name: student-hororoi-frontend
-    expose: ["80"]                      # NU ports: — nginx-ul cursului face routing-ul
+    expose: ["80"]
     depends_on: [api]
     networks: [studlab_net]
     restart: unless-stopped
