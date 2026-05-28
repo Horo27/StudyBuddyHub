@@ -12,5 +12,7 @@ namespace StudyBuddyHub.Api.DTOs
         public string? Location { get; set; }
         public string SubjectName { get; set; } = string.Empty;
         public string OwnerName { get; set; } = string.Empty;
+        public string? SubjectImageUrl { get; set; }
+        public string? SubjectImageUrl2 { get; set; }
     }
 }

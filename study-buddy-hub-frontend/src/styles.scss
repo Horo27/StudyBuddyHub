@@ -1,39 +1,84 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+/* ================================================================
+   StudyBuddy Hub — Global Design Tokens & Base
+   ================================================================ */
+:root {
+  --indigo-900: #0f1230;
+  --indigo-800: #161a4a;
+  --indigo-700: #1a1f5e;
+  --indigo-600: #2a3180;
+  --indigo-500: #4a52b8;
+  --indigo-100: #e8eaf6;
+  --indigo-50:  #f3f4fb;
+
+  --coral-700: #d8451a;
+  --coral-600: #ff6b35;
+  --coral-500: #ff8c5c;
+  --coral-100: #ffe2d4;
+  --coral-50:  #fff5ee;
+
+  --bg:          #ffffff;
+  --bg-soft:     #f8f9ff;
+  --bg-cream:    #fbf8f3;
+  --surface:     #ffffff;
+  --border:      #e8eaf3;
+  --border-strong: #d6dae8;
+
+  --text:        #0f1230;
+  --text-muted:  #5b6182;
+  --text-soft:   #8a90ab;
+
+  --success:     #0f8a5f;
+  --warn:        #b35900;
+
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-xs: 0 1px 2px rgba(15,18,48,.04);
+  --shadow-sm: 0 1px 3px rgba(15,18,48,.06), 0 1px 2px rgba(15,18,48,.04);
+  --shadow-md: 0 4px 10px rgba(15,18,48,.06), 0 2px 4px rgba(15,18,48,.04);
+  --shadow-lg: 0 14px 30px rgba(15,18,48,.10), 0 4px 10px rgba(15,18,48,.05);
+  --shadow-xl: 0 28px 60px rgba(15,18,48,.14), 0 10px 20px rgba(15,18,48,.06);
+
+  --ease: cubic-bezier(.2,.7,.2,1);
 }
 
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
+/* ================================================================
+   Base reset
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, Roboto, sans-serif;
+  font-feature-settings: "ss01","cv11";
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+/* ================================================================
+   Angular Material theme overrides — keep mat-components styled
+   ================================================================ */
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: var(--indigo-700);
+  --mdc-filled-button-label-text-color: #fff;
+}
+.mat-mdc-raised-button.mat-accent,
+.mat-mdc-unelevated-button.mat-accent {
+  --mdc-filled-button-container-color: var(--coral-600);
+  --mdc-filled-button-label-text-color: #fff;
 }
 
-.error-message {
-  color: #f44336;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.full-width {
-  width: 100%;
-}
-
-mat-card {
-  margin-bottom: 16px;
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
-  h1 {
-    margin: 0;
-  }
-}
+/* ================================================================
+   Shared utility classes
+   ================================================================ */
+.full-width { width: 100%; }
 
 .spinner-container {
   display: flex;
@@ -43,13 +88,189 @@ mat-card {
 
 .empty-state {
   text-align: center;
-  padding: 48px;
-  color: rgba(0, 0, 0, 0.54);
+  padding: 60px 24px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
 
+  .material-icons,
+  .material-icons-outlined,
   mat-icon {
-    font-size: 64px;
-    height: 64px;
-    width: 64px;
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
     margin-bottom: 16px;
+    color: var(--text-soft);
   }
+  h3 { margin: 0 0 6px; font-weight: 700; color: var(--text); }
+  p  { margin: 0; }
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--indigo-900); }
+}
+
+/* ================================================================
+   Avatar (gradient initials) — used as a shared utility
+   ================================================================ */
+.sbh-avatar {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  color: white;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.18);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.sbh-avatar--xs { width: 28px;  height: 28px;  font-size: 11px; }
+.sbh-avatar--sm { width: 36px;  height: 36px;  font-size: 13px; }
+.sbh-avatar--md { width: 48px;  height: 48px;  font-size: 15px; }
+.sbh-avatar--lg { width: 72px;  height: 72px;  font-size: 22px; }
+.sbh-avatar--xl { width: 120px; height: 120px; font-size: 36px; }
+
+/* ================================================================
+   Chip primitives
+   ================================================================ */
+.sbh-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 12px;
+  border-radius: 999px;
+  background: var(--indigo-50); color: var(--indigo-700);
+  font-size: 13px; font-weight: 600;
+  border: 1px solid transparent;
+  letter-spacing: -.005em;
+  white-space: nowrap;
+  .material-icons-outlined, .material-icons { font-size: 16px; }
+}
+.sbh-chip--coral  { background: var(--coral-50);  color: var(--coral-700); }
+.sbh-chip--outline{ background: white; border-color: var(--border); color: var(--text); }
+.sbh-chip--solid  { background: var(--indigo-700); color: white; }
+.sbh-chip--ghost  { background: rgba(255,255,255,.18); color: white; backdrop-filter: blur(8px); border-color: rgba(255,255,255,.2); }
+.sbh-chip--warn   { background: #fff8f0; color: var(--warn); }
+.sbh-chip--success{ background: #e8f5f0; color: var(--success); }
+
+/* ================================================================
+   Button primitives
+   ================================================================ */
+.sbh-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 22px;
+  border-radius: 999px; border: 0;
+  font-weight: 600; font-size: 15px; letter-spacing: -.01em;
+  font-family: inherit;
+  transition: transform .15s var(--ease), box-shadow .2s var(--ease), background .15s;
+  white-space: nowrap; cursor: pointer;
+  .material-icons-outlined, .material-icons { font-size: 18px; }
+}
+.sbh-btn--raised {
+  background: var(--indigo-700); color: white;
+  box-shadow: var(--shadow-sm);
+  &:hover { background: var(--indigo-800); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+}
+.sbh-btn--accent {
+  background: var(--coral-600); color: white;
+  box-shadow: 0 6px 14px rgba(255,107,53,.32);
+  &:hover { background: var(--coral-700); transform: translateY(-1px); box-shadow: 0 10px 20px rgba(255,107,53,.36); }
+}
+.sbh-btn--stroked {
+  background: white; color: var(--text);
+  border: 1.5px solid var(--border-strong);
+  &:hover { border-color: var(--indigo-700); color: var(--indigo-700); }
+}
+.sbh-btn--flat {
+  background: transparent; color: var(--text);
+  height: 40px; padding: 0 14px;
+  &:hover { background: var(--indigo-50); color: var(--indigo-700); }
+}
+.sbh-btn--sm  { height: 38px; padding: 0 18px; font-size: 14px; }
+.sbh-btn--lg  { height: 52px; padding: 0 28px; font-size: 16px; }
+.sbh-btn--full{ width: 100%; }
+
+.sbh-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 999px; border: 0; background: transparent;
+  color: var(--text-muted); cursor: pointer;
+  transition: background .15s, color .15s;
+  font-family: inherit;
+  .material-icons-outlined, .material-icons { font-size: 22px; }
+  &:hover { background: var(--indigo-50); color: var(--indigo-700); }
+}
+
+/* ================================================================
+   Section layout
+   ================================================================ */
+.sbh-section {
+  max-width: 1280px; margin: 0 auto;
+  padding: 64px 32px;
+}
+.sbh-section--soft { background: var(--bg-soft); }
+
+.sbh-section__head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; margin-bottom: 32px;
+}
+.sbh-section__title {
+  font-size: 32px; font-weight: 800; letter-spacing: -.025em;
+  color: var(--indigo-900); margin: 0 0 6px;
+}
+.sbh-section__sub { color: var(--text-muted); font-size: 16px; margin: 0; }
+
+/* ================================================================
+   Offer card grid
+   ================================================================ */
+.sbh-offers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  @media (max-width: 980px) { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* ================================================================
+   Auth field primitives
+   ================================================================ */
+.sbh-field {
+  display: block;
+  margin-bottom: 14px;
+}
+.sbh-field__label {
+  display: block;
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 6px;
+}
+.sbh-field__input {
+  display: flex; align-items: center; gap: 10px;
+  height: 52px; padding: 0 16px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  background: white;
+  transition: border-color .15s, box-shadow .15s;
+  &:focus-within { border-color: var(--indigo-700); box-shadow: 0 0 0 4px rgba(26,31,94,.08); }
+  input {
+    flex: 1; border: 0; outline: 0; background: transparent;
+    font: inherit; font-size: 15px; color: var(--text);
+    &::placeholder { color: var(--text-soft); }
+  }
+  .material-icons-outlined { color: var(--text-soft); font-size: 20px; }
+}
+.sbh-field--error .sbh-field__input { border-color: #d94343; }
+.sbh-field__error {
+  font-size: 12.5px; color: #b51b1b; margin-top: 6px;
+  display: flex; gap: 4px; align-items: center;
+  .material-icons-outlined { font-size: 14px; }
+}
+
+/* ================================================================
+   Responsive
+   ================================================================ */
+@media (max-width: 560px) {
+  .sbh-section { padding: 40px 18px; }
+  .sbh-section__head { flex-direction: column; align-items: flex-start; }
 }

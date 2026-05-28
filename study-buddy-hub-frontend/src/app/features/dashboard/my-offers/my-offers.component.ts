@@ -1,14 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatCardModule } from '@angular/material/card';
 import { StudyOffersService } from '../../../core/services/study-offers.service';
 import { StudyOfferList } from '../../../core/models/study-offer.models';
 import { OfferCardComponent } from '../../../shared/components/offer-card/offer-card.component';
@@ -16,57 +9,60 @@ import { OfferCardComponent } from '../../../shared/components/offer-card/offer-
 @Component({
   selector: 'app-my-offers',
   standalone: true,
-  imports: [
-    CommonModule,
-    CurrencyPipe,
-    RouterModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatChipsModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatCardModule,
-    OfferCardComponent
-  ],
+  imports: [CommonModule, RouterModule, MatSnackBarModule, OfferCardComponent],
   template: `
-    <div class="page-header">
-      <h1>Ofertele mele</h1>
-      <button mat-raised-button color="primary" routerLink="/offers/create">
-        <mat-icon>add</mat-icon> Ofertă nouă
-      </button>
-    </div>
+    <div class="dashboard-page">
+      <div class="dashboard-header">
+        <div>
+          <h1>Ofertele mele</h1>
+          <p>Gestionează ofertele tale de meditații.</p>
+        </div>
+        <a routerLink="/offers/create" class="sbh-btn sbh-btn--raised">
+          <span class="material-icons-outlined">add</span> Ofertă nouă
+        </a>
+      </div>
 
-    @if (loading) {
-      <div class="spinner-container">
-        <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
-      </div>
-    } @else if (offers.length === 0) {
-      <div class="empty-state">
-        <mat-icon>post_add</mat-icon>
-        <p>Nu ai publicat nicio ofertă încă.</p>
-        <button mat-raised-button color="primary" routerLink="/offers/create">Publică prima ofertă</button>
-      </div>
-    } @else {
-      <div class="offers-grid">
-        @for (offer of offers; track offer.id) {
-          <app-offer-card
-            [offer]="offer"
-            [showActions]="true"
-            (edit)="editOffer($event)"
-            (delete)="confirmDelete($event)">
-          </app-offer-card>
-        }
-      </div>
-    }
+      @if (loading) {
+        <div class="spinner-container"><div class="sbh-spinner"></div></div>
+      } @else if (offers.length === 0) {
+        <div class="empty-state">
+          <span class="material-icons-outlined">post_add</span>
+          <h3>Nu ai publicat nicio ofertă</h3>
+          <p>Publică prima ta ofertă și conectează-te cu elevi care au nevoie de ajutorul tău.</p>
+          <a routerLink="/offers/create" class="sbh-btn sbh-btn--raised" style="margin-top:16px">
+            Publică prima ofertă
+          </a>
+        </div>
+      } @else {
+        <div class="sbh-offers-grid">
+          @for (offer of offers; track offer.id) {
+            <app-offer-card
+              [offer]="offer"
+              [showActions]="true"
+              (edit)="editOffer($event)"
+              (delete)="confirmDelete($event)"
+            ></app-offer-card>
+          }
+        </div>
+      }
+    </div>
   `,
   styles: [`
-    .offers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
+    .dashboard-page { max-width: 1200px; margin: 0 auto; padding: 32px 32px 80px; }
+    .dashboard-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; margin-bottom: 32px;
+      h1 { font-size: 28px; font-weight: 800; letter-spacing: -.025em; color: var(--indigo-900); margin: 0 0 4px; }
+      p  { color: var(--text-muted); font-size: 15px; margin: 0; }
     }
+    .sbh-spinner {
+      width: 40px; height: 40px; border-radius: 999px;
+      border: 3px solid var(--indigo-100); border-top-color: var(--indigo-700);
+      animation: spin .8s linear infinite;
+    }
+    .spinner-container { display: flex; justify-content: center; padding: 60px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { .dashboard-page { padding: 20px 18px 60px; } }
   `]
 })
 export class MyOffersComponent implements OnInit {
@@ -77,9 +73,7 @@ export class MyOffersComponent implements OnInit {
   offers: StudyOfferList[] = [];
   loading = false;
 
-  ngOnInit(): void {
-    this.load();
-  }
+  ngOnInit(): void { this.load(); }
 
   editOffer(id: number): void {
     this.router.navigate(['/offers', id, 'edit']);

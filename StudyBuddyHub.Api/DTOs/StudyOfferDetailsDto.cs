@@ -19,5 +19,6 @@ namespace StudyBuddyHub.Api.DTOs
         public string OwnerId { get; set; } = string.Empty;
         public string OwnerName { get; set; } = string.Empty;
         public string? OwnerEmail { get; set; }
+        public string? SubjectImageUrl { get; set; }
     }
 }

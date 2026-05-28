@@ -17,7 +17,9 @@ namespace StudyBuddyHub.Api.Mappings
                 Price = offer.Price,
                 Location = offer.Location,
                 SubjectName = offer.Subject?.Name ?? "Unknown",
-                OwnerName = offer.Owner != null ? $"{offer.Owner.FirstName} {offer.Owner.LastName}".Trim() : "Unknown"
+                OwnerName = offer.Owner != null ? $"{offer.Owner.FirstName} {offer.Owner.LastName}".Trim() : "Unknown",
+                SubjectImageUrl = offer.Subject?.ImageUrl,
+                SubjectImageUrl2 = offer.Subject?.ImageUrl2
             };
         }
 
@@ -38,7 +40,8 @@ namespace StudyBuddyHub.Api.Mappings
                 SubjectName = offer.Subject?.Name ?? "Unknown",
                 OwnerId = offer.OwnerId,
                 OwnerName = offer.Owner != null ? $"{offer.Owner.FirstName} {offer.Owner.LastName}".Trim() : "Unknown",
-                OwnerEmail = offer.Owner?.Email
+                OwnerEmail = offer.Owner?.Email,
+                SubjectImageUrl = offer.Subject?.ImageUrl
             };
         }
     }

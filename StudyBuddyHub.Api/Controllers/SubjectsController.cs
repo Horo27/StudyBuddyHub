@@ -25,7 +25,9 @@ namespace StudyBuddyHub.Api.Controllers
             {
                 Id = s.Id,
                 Name = s.Name,
-                Description = s.Description
+                Description = s.Description,
+                ImageUrl = s.ImageUrl,
+                ImageUrl2 = s.ImageUrl2
             });
             return Ok(dtos);
         }

@@ -2,15 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { StudyOffersService } from '../../../core/services/study-offers.service';
 import { SubjectsService } from '../../../core/services/subjects.service';
 import { Subject } from '../../../core/models/subject.models';
@@ -18,142 +11,220 @@ import { Subject } from '../../../core/models/subject.models';
 @Component({
   selector: 'app-offer-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatIconModule
-  ],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, MatSnackBarModule, MatSlideToggleModule],
   template: `
-    <div class="form-container">
-      <div class="page-header">
-        <button mat-icon-button (click)="goBack()"><mat-icon>arrow_back</mat-icon></button>
-        <h1>{{ isEditMode ? 'Editează oferta' : 'Publică ofertă nouă' }}</h1>
+    <div class="form-page">
+      <div class="form-page__header">
+        <button class="sbh-icon-btn" (click)="goBack()" title="Înapoi">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <div>
+          <h1>{{ isEditMode ? 'Editează oferta' : 'Publică ofertă nouă' }}</h1>
+          <p>{{ isEditMode ? 'Modifică detaliile ofertei tale.' : 'Completează informațiile pentru a publica o ofertă de meditații.' }}</p>
+        </div>
       </div>
 
       @if (loadingOffer) {
-        <div class="spinner-container"><mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner></div>
+        <div class="spinner-container"><div class="sbh-spinner"></div></div>
       } @else {
-        <mat-card>
-          <mat-card-content>
-            <form [formGroup]="form" (ngSubmit)="submit()">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Titlu</mat-label>
-                <input matInput formControlName="title" placeholder="ex: Meditații matematică clasa a 12-a">
-                @if (form.get('title')?.touched && form.get('title')?.hasError('required')) {
-                  <mat-error>Titlul este obligatoriu</mat-error>
-                }
-                @if (form.get('title')?.touched && form.get('title')?.hasError('minlength')) {
-                  <mat-error>Titlul trebuie să aibă minim 3 caractere</mat-error>
-                }
-              </mat-form-field>
+        <div class="form-card">
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <!-- Title -->
+            <div class="sbh-field">
+              <label class="sbh-field__label">Titlu *</label>
+              <div class="sbh-field__input" [class.field-error]="fieldInvalid('title')">
+                <span class="material-icons-outlined">title</span>
+                <input type="text" formControlName="title"
+                       placeholder="ex: Meditații matematică clasa a 12-a">
+              </div>
+              @if (fieldInvalid('title')) {
+                <div class="sbh-field__error">
+                  <span class="material-icons-outlined">error_outline</span>
+                  Titlul este obligatoriu (minim 3 caractere)
+                </div>
+              }
+            </div>
 
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Descriere</mat-label>
-                <textarea matInput formControlName="description" rows="4"
+            <!-- Description -->
+            <div class="sbh-field">
+              <label class="sbh-field__label">Descriere *</label>
+              <div class="sbh-field__input field-textarea" [class.field-error]="fieldInvalid('description')">
+                <textarea formControlName="description" rows="5"
                           placeholder="Descrie ce oferi, metodele tale, disponibilitatea..."></textarea>
-                @if (form.get('description')?.touched && form.get('description')?.hasError('required')) {
-                  <mat-error>Descrierea este obligatorie</mat-error>
-                }
-                @if (form.get('description')?.touched && form.get('description')?.hasError('minlength')) {
-                  <mat-error>Descrierea trebuie să aibă minim 10 caractere</mat-error>
-                }
-              </mat-form-field>
+              </div>
+              @if (fieldInvalid('description')) {
+                <div class="sbh-field__error">
+                  <span class="material-icons-outlined">error_outline</span>
+                  Descrierea este obligatorie (minim 10 caractere)
+                </div>
+              }
+            </div>
 
-              <div class="row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Materie</mat-label>
-                  <mat-select formControlName="subjectId">
+            <!-- Subject + Level -->
+            <div class="form-row">
+              <div class="sbh-field">
+                <label class="sbh-field__label">Materie *</label>
+                <div class="sbh-select-wrap">
+                  <select formControlName="subjectId" class="sbh-select">
+                    <option [value]="null" disabled>Selectează materia</option>
                     @for (s of subjects; track s.id) {
-                      <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                      <option [value]="s.id">{{ s.name }}</option>
                     }
-                  </mat-select>
-                  @if (form.get('subjectId')?.touched && form.get('subjectId')?.hasError('required')) {
-                    <mat-error>Selectează o materie</mat-error>
-                  }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                  <mat-label>Nivel</mat-label>
-                  <mat-select formControlName="level">
-                    <mat-option [value]="0">Începător</mat-option>
-                    <mat-option [value]="1">Intermediar</mat-option>
-                    <mat-option [value]="2">Avansat</mat-option>
-                  </mat-select>
-                  @if (form.get('level')?.touched && form.get('level')?.hasError('required')) {
-                    <mat-error>Selectează nivelul</mat-error>
-                  }
-                </mat-form-field>
+                  </select>
+                  <span class="material-icons-outlined sbh-select-arrow">expand_more</span>
+                </div>
+                @if (fieldInvalid('subjectId')) {
+                  <div class="sbh-field__error">
+                    <span class="material-icons-outlined">error_outline</span> Obligatoriu
+                  </div>
+                }
               </div>
 
-              <div class="row">
-                <mat-form-field appearance="outline">
-                  <mat-label>Tip sesiune</mat-label>
-                  <mat-select formControlName="sessionType">
-                    <mat-option [value]="0">Online</mat-option>
-                    <mat-option [value]="1">Față în față</mat-option>
-                    <mat-option [value]="2">Hibrid</mat-option>
-                  </mat-select>
-                  @if (form.get('sessionType')?.touched && form.get('sessionType')?.hasError('required')) {
-                    <mat-error>Selectează tipul sesiunii</mat-error>
-                  }
-                </mat-form-field>
+              <div class="sbh-field">
+                <label class="sbh-field__label">Nivel *</label>
+                <div class="sbh-select-wrap">
+                  <select formControlName="level" class="sbh-select">
+                    <option [value]="null" disabled>Selectează nivelul</option>
+                    <option [value]="0">Începător</option>
+                    <option [value]="1">Intermediar</option>
+                    <option [value]="2">Avansat</option>
+                  </select>
+                  <span class="material-icons-outlined sbh-select-arrow">expand_more</span>
+                </div>
+                @if (fieldInvalid('level')) {
+                  <div class="sbh-field__error">
+                    <span class="material-icons-outlined">error_outline</span> Obligatoriu
+                  </div>
+                }
+              </div>
+            </div>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Preț (RON / sesiune)</mat-label>
-                  <input matInput type="number" formControlName="price" min="0">
-                  <mat-icon matSuffix>payments</mat-icon>
-                  @if (form.get('price')?.touched && form.get('price')?.hasError('required')) {
-                    <mat-error>Prețul este obligatoriu</mat-error>
-                  }
-                  @if (form.get('price')?.touched && form.get('price')?.hasError('min')) {
-                    <mat-error>Prețul nu poate fi negativ</mat-error>
-                  }
-                </mat-form-field>
+            <!-- Session type + Price -->
+            <div class="form-row">
+              <div class="sbh-field">
+                <label class="sbh-field__label">Tip sesiune *</label>
+                <div class="sbh-select-wrap">
+                  <select formControlName="sessionType" class="sbh-select">
+                    <option [value]="null" disabled>Selectează tipul</option>
+                    <option [value]="0">Online</option>
+                    <option [value]="1">Față în față</option>
+                    <option [value]="2">Hibrid</option>
+                  </select>
+                  <span class="material-icons-outlined sbh-select-arrow">expand_more</span>
+                </div>
               </div>
 
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Locație (opțional)</mat-label>
-                <input matInput formControlName="location" placeholder="ex: Sector 1, București">
-                <mat-icon matSuffix>location_on</mat-icon>
-              </mat-form-field>
+              <div class="sbh-field">
+                <label class="sbh-field__label">Preț (RON / sesiune) *</label>
+                <div class="sbh-field__input" [class.field-error]="fieldInvalid('price')">
+                  <span class="material-icons-outlined">payments</span>
+                  <input type="number" formControlName="price" min="0" placeholder="ex: 80">
+                </div>
+                @if (fieldInvalid('price')) {
+                  <div class="sbh-field__error">
+                    <span class="material-icons-outlined">error_outline</span>
+                    Prețul este obligatoriu
+                  </div>
+                }
+              </div>
+            </div>
 
-              @if (isEditMode) {
+            <!-- Location -->
+            <div class="sbh-field">
+              <label class="sbh-field__label">Locație <span style="color:var(--text-soft);font-weight:400">(opțional)</span></label>
+              <div class="sbh-field__input">
+                <span class="material-icons-outlined">location_on</span>
+                <input type="text" formControlName="location" placeholder="ex: Sector 1, București">
+              </div>
+            </div>
+
+            @if (isEditMode) {
+              <div class="active-toggle">
                 <mat-slide-toggle formControlName="isActive" color="primary">
                   Ofertă activă
                 </mat-slide-toggle>
-              }
-
-              <div class="form-actions">
-                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving">
-                  @if (saving) {
-                    <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
-                  } @else {
-                    {{ isEditMode ? 'Salvează modificările' : 'Publică oferta' }}
-                  }
-                </button>
-                <button mat-button type="button" (click)="goBack()">Anulează</button>
               </div>
-            </form>
-          </mat-card-content>
-        </mat-card>
+            }
+
+            <div class="form-actions">
+              <button type="submit" class="sbh-btn sbh-btn--raised sbh-btn--lg"
+                      [disabled]="form.invalid || saving">
+                @if (saving) {
+                  <span class="sbh-spin-sm"></span>
+                } @else {
+                  {{ isEditMode ? 'Salvează modificările' : 'Publică oferta' }}
+                }
+              </button>
+              <button type="button" class="sbh-btn sbh-btn--flat" (click)="goBack()">Anulează</button>
+            </div>
+          </form>
+        </div>
       }
     </div>
   `,
   styles: [`
-    .form-container { max-width: 720px; margin: 0 auto; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-actions { display: flex; gap: 12px; margin-top: 24px; align-items: center; }
-    mat-slide-toggle { margin-bottom: 16px; }
-    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+    .form-page {
+      max-width: 720px; margin: 0 auto; padding: 32px 32px 80px;
+    }
+    .form-page__header {
+      display: flex; align-items: flex-start; gap: 16px; margin-bottom: 32px;
+      h1 { font-size: 28px; font-weight: 800; letter-spacing: -.025em; color: var(--indigo-900); margin: 0 0 4px; }
+      p  { color: var(--text-muted); font-size: 15px; margin: 0; }
+    }
+    .form-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .sbh-select-wrap {
+      position: relative;
+    }
+    .sbh-select {
+      width: 100%; height: 52px; padding: 0 40px 0 16px;
+      border: 1.5px solid var(--border-strong); border-radius: 12px;
+      background: white; font: inherit; font-size: 15px; color: var(--text);
+      appearance: none; outline: none; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      &:focus { border-color: var(--indigo-700); box-shadow: 0 0 0 4px rgba(26,31,94,.08); }
+    }
+    .sbh-select-arrow {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      font-size: 20px; color: var(--text-soft); pointer-events: none;
+    }
+    .field-textarea {
+      height: auto !important; padding: 14px 16px !important;
+      align-items: flex-start !important;
+      textarea {
+        flex: 1; border: 0; outline: 0; background: transparent;
+        font: inherit; font-size: 15px; color: var(--text);
+        resize: vertical; min-height: 80px;
+        &::placeholder { color: var(--text-soft); }
+      }
+    }
+    .field-error { border-color: #d94343 !important; }
+    .active-toggle { margin-bottom: 24px; }
+    .form-actions {
+      display: flex; gap: 12px; align-items: center; margin-top: 32px;
+    }
+    .sbh-spinner {
+      width: 40px; height: 40px; border-radius: 999px;
+      border: 3px solid var(--indigo-100); border-top-color: var(--indigo-700);
+      animation: spin .8s linear infinite;
+    }
+    .sbh-spin-sm {
+      width: 20px; height: 20px; border-radius: 999px;
+      border: 2.5px solid rgba(255,255,255,.3); border-top-color: white;
+      animation: spin .8s linear infinite; display: inline-block;
+    }
+    .spinner-container { display: flex; justify-content: center; padding: 60px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) {
+      .form-page { padding: 20px 18px 60px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class OfferFormComponent implements OnInit {
@@ -189,6 +260,11 @@ export class OfferFormComponent implements OnInit {
       this.offerId = Number(id);
       this.loadOffer();
     }
+  }
+
+  fieldInvalid(name: string): boolean {
+    const c = this.form.get(name);
+    return !!(c?.touched && c.invalid);
   }
 
   submit(): void {
@@ -240,7 +316,6 @@ export class OfferFormComponent implements OnInit {
         this.form.patchValue({
           title: offer.title,
           description: offer.description,
-          subjectId: this.subjects.find(s => s.name === offer.subjectName)?.id ?? null,
           level: levelMap[offer.level] ?? 0,
           sessionType: sessionMap[offer.sessionType] ?? 0,
           price: offer.price,
@@ -248,7 +323,6 @@ export class OfferFormComponent implements OnInit {
           isActive: offer.isActive
         });
         this.loadingOffer = false;
-        // Re-patch subjectId after subjects might have loaded
         this.subjectsService.getAll().subscribe(subjects => {
           this.subjects = subjects;
           const subjectId = subjects.find(s => s.name === offer.subjectName)?.id ?? null;

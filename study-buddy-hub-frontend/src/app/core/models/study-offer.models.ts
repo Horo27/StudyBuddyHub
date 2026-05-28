@@ -10,6 +10,8 @@ export interface StudyOfferList {
   location?: string;
   subjectName: string;
   ownerName: string;
+  subjectImageUrl?: string;
+  subjectImageUrl2?: string;
 }
 
 export interface StudyOfferDetails {
@@ -27,6 +29,7 @@ export interface StudyOfferDetails {
   ownerId: string;
   ownerName: string;
   ownerEmail?: string;
+  subjectImageUrl?: string;
 }
 
 export interface StudyOfferCreate {
