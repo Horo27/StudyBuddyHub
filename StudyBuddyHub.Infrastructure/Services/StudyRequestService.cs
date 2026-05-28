@@ -13,12 +13,14 @@ namespace StudyBuddyHub.Infrastructure.Services
     {
         private readonly IStudyRequestRepository _requestRepository;
         private readonly IStudyOfferRepository _offerRepository;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<StudyRequestService> _logger;
 
-        public StudyRequestService(IStudyRequestRepository requestRepository, IStudyOfferRepository offerRepository, ILogger<StudyRequestService> logger)
+        public StudyRequestService(IStudyRequestRepository requestRepository, IStudyOfferRepository offerRepository, INotificationService notificationService, ILogger<StudyRequestService> logger)
         {
             _requestRepository = requestRepository;
             _offerRepository = offerRepository;
+            _notificationService = notificationService;
             _logger = logger;
         }
 
@@ -46,6 +48,13 @@ namespace StudyBuddyHub.Infrastructure.Services
 
             var created = await _requestRepository.AddAsync(request);
             _logger.LogInformation("User {UserId} created request {RequestId} for offer {OfferId}", userId, created.Id, request.OfferId);
+
+            await _notificationService.NotifyUserAsync(
+                offer.OwnerId,
+                "request_received",
+                $"Ai primit o cerere nouă pentru oferta {offer.Title}",
+                new { requestId = created.Id, offerId = offer.Id, offerTitle = offer.Title });
+
             return created;
         }
 
@@ -75,6 +84,12 @@ namespace StudyBuddyHub.Infrastructure.Services
             request.Status = RequestStatus.Accepted;
             await _requestRepository.UpdateAsync(request);
             _logger.LogInformation("Request {RequestId} accepted by owner {OwnerId}", id, ownerId);
+
+            await _notificationService.NotifyUserAsync(
+                request.RequesterId,
+                "request_accepted",
+                $"Cererea ta pentru {request.Offer.Title} a fost acceptată!",
+                new { requestId = request.Id, offerId = request.OfferId, offerTitle = request.Offer.Title });
         }
 
         public async Task RejectRequestAsync(int id, string ownerId)
@@ -91,6 +106,12 @@ namespace StudyBuddyHub.Infrastructure.Services
 
             request.Status = RequestStatus.Rejected;
             await _requestRepository.UpdateAsync(request);
+
+            await _notificationService.NotifyUserAsync(
+                request.RequesterId,
+                "request_rejected",
+                $"Cererea ta pentru {request.Offer.Title} a fost respinsă.",
+                new { requestId = request.Id, offerId = request.OfferId, offerTitle = request.Offer.Title });
         }
 
         public async Task CancelRequestAsync(int id, string requesterId)
@@ -107,6 +128,12 @@ namespace StudyBuddyHub.Infrastructure.Services
 
             request.Status = RequestStatus.Cancelled;
             await _requestRepository.UpdateAsync(request);
+
+            await _notificationService.NotifyUserAsync(
+                request.Offer.OwnerId,
+                "request_cancelled",
+                $"Cererea pentru oferta {request.Offer.Title} a fost anulată.",
+                new { requestId = request.Id, offerId = request.OfferId, offerTitle = request.Offer.Title });
         }
     }
 }

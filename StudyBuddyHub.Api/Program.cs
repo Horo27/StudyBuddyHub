@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudyBuddyHub.Api.Hubs;
 using StudyBuddyHub.Api.Middleware;
+using StudyBuddyHub.Api.Services;
 using StudyBuddyHub.Core.Entities;
 using StudyBuddyHub.Core.Interfaces;
 using StudyBuddyHub.Infrastructure.Data;
@@ -89,7 +91,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
     };
+    // Allow SignalR to receive JWT from query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IStudyOfferRepository, StudyOfferRepository>();
@@ -101,6 +119,7 @@ builder.Services.AddScoped<IStudyOfferService, StudyOfferService>();
 builder.Services.AddScoped<IStudyRequestService, StudyRequestService>();
 builder.Services.AddScoped<IFavoriteOfferService, FavoriteOfferService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<INotificationService, SignalRNotificationService>();
 
 // Configure CORS - allow frontend (default localhost:4200) and enable credentials for dev
 builder.Services.AddCors(options =>
@@ -143,5 +162,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
