@@ -217,9 +217,9 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 980px) {
-      .auth { grid-template-columns: 1fr; }
+      .auth { grid-template-columns: 1fr; min-height: unset; }
       .auth__visual { display: none; }
-      .auth__form { padding: 32px 22px; }
+      .auth__form { padding: 32px 22px; align-items: start; }
     }
   `]
 })

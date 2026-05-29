@@ -210,11 +210,10 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
       .lbl { font-size: 12.5px; color: rgba(255,255,255,.7); margin-top: 4px; }
     }
     .auth__form {
-      display: grid; place-items: center;
+      display: grid; place-items: center; align-items: start;
       padding: 32px 56px; background: white;
-      overflow-y: auto;
     }
-    .auth__card { width: 100%; max-width: 420px; padding: 24px 0; }
+    .auth__card { width: 100%; max-width: 420px; padding: 32px 0; }
     .auth__toggle {
       display: inline-flex; padding: 4px;
       background: var(--indigo-50); border-radius: 999px; margin-bottom: 26px;
@@ -245,9 +244,11 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 980px) {
-      .auth { grid-template-columns: 1fr; }
+      .auth { grid-template-columns: 1fr; min-height: unset; }
       .auth__visual { display: none; }
-      .auth__form { padding: 32px 22px; }
+      .auth__form { padding: 24px 20px; }
+      .auth__card { padding: 16px 0; }
+      .name-row { grid-template-columns: 1fr; gap: 0; }
     }
   `]
 })

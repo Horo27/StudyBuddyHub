@@ -155,12 +155,14 @@ import { initials, avatarStyle } from '../../utils/avatar.utils';
       background: rgba(255,255,255,.92);
       backdrop-filter: saturate(180%) blur(14px);
       border-bottom: 1px solid var(--border);
+      min-width: 0;
     }
     .nav__inner {
       max-width: 1280px; margin: 0 auto;
       display: flex; align-items: center; gap: 32px;
       padding: 14px 32px;
       position: relative;
+      min-width: 0;
     }
     .nav__logo {
       display: flex; align-items: center; gap: 10px;
@@ -208,11 +210,11 @@ import { initials, avatarStyle } from '../../utils/avatar.utils';
 
     /* Notification panel */
     .nav__notif-panel {
-      position: absolute; top: calc(100% + 10px); right: 0;
+      position: fixed; top: 64px; right: 8px;
       background: white; border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-lg);
-      min-width: 320px; max-width: 360px;
+      width: calc(100vw - 16px); max-width: 360px;
       z-index: 202;
       overflow: hidden;
     }
@@ -260,12 +262,12 @@ import { initials, avatarStyle } from '../../utils/avatar.utils';
       &:hover, &--open { box-shadow: var(--shadow-md); border-color: var(--border-strong); }
     }
     .nav__dropdown {
-      position: absolute; top: calc(100% + 10px); right: 0;
+      position: fixed; top: 64px; right: 8px;
       background: white; border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-lg);
       padding: 8px;
-      min-width: 240px;
+      width: calc(100vw - 16px); max-width: 280px;
       z-index: 201;
     }
     .nav__dropdown-header {
@@ -325,6 +327,14 @@ import { initials, avatarStyle } from '../../utils/avatar.utils';
     @media (max-width: 980px) {
       .nav__inner { padding: 12px 18px; gap: 14px; }
       .nav__links { display: none; }
+    }
+    @media (max-width: 500px) {
+      .nav__inner { padding: 10px 12px; gap: 8px; }
+      .nav__logo { font-size: 16px; gap: 8px; }
+      .nav__actions { gap: 4px; }
+      .sbh-btn--flat { padding: 0 8px; font-size: 13px; height: 36px; }
+      .sbh-btn--raised.sbh-btn--sm { padding: 0 12px; font-size: 13px; height: 34px; }
+      .nav__avatar-menu { padding: 5px 5px 5px 10px; gap: 6px; }
     }
   `]
 })

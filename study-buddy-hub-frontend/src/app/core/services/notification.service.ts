@@ -25,7 +25,9 @@ export class NotificationService implements OnDestroy {
 
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.hubUrl}/notifications`, {
-        accessTokenFactory: () => this.authService.getToken() ?? ''
+        accessTokenFactory: () => this.authService.getToken() ?? '',
+        // WebSockets are blocked by the shared reverse proxy; Long Polling works over plain HTTP
+        transport: signalR.HttpTransportType.LongPolling
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Warning)
