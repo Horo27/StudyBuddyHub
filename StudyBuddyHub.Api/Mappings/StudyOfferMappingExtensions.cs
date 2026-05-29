@@ -19,7 +19,8 @@ namespace StudyBuddyHub.Api.Mappings
                 SubjectName = offer.Subject?.Name ?? "Unknown",
                 OwnerName = offer.Owner != null ? $"{offer.Owner.FirstName} {offer.Owner.LastName}".Trim() : "Unknown",
                 SubjectImageUrl = offer.Subject?.ImageUrl,
-                SubjectImageUrl2 = offer.Subject?.ImageUrl2
+                SubjectImageUrl2 = offer.Subject?.ImageUrl2,
+                IsActive = offer.IsActive
             };
         }
 

@@ -121,9 +121,17 @@ import { StudyRequest } from '../../../core/models/study-request.models';
                       pentru <a [routerLink]="['/offers', req.offerId]">{{ req.offerTitle }}</a>
                     </span>
                   </div>
-                  <span class="sbh-chip" [ngClass]="statusChipClass(req.status)">
-                    {{ statusLabel(req.status) }}
-                  </span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <span class="sbh-chip" [ngClass]="statusChipClass(req.status)">
+                      {{ statusLabel(req.status) }}
+                    </span>
+                    @if (req.paymentStatus === 'Paid') {
+                      <span class="sbh-chip sbh-chip--success" style="font-size:12px">
+                        <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle">check_circle</span>
+                        Plătit
+                      </span>
+                    }
+                  </div>
                 </div>
                 @if (req.message) {
                   <p class="request-card__msg">{{ req.message }}</p>

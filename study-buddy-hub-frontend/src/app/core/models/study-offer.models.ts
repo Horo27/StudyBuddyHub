@@ -12,6 +12,7 @@ export interface StudyOfferList {
   ownerName: string;
   subjectImageUrl?: string;
   subjectImageUrl2?: string;
+  isActive: boolean;
 }
 
 export interface StudyOfferDetails {

@@ -14,5 +14,6 @@ namespace StudyBuddyHub.Api.DTOs
         public string OwnerName { get; set; } = string.Empty;
         public string? SubjectImageUrl { get; set; }
         public string? SubjectImageUrl2 { get; set; }
+        public bool IsActive { get; set; }
     }
 }

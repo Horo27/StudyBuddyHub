@@ -100,7 +100,7 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
                   @if (offer.ownerEmail) { · {{ offer.ownerEmail }} }
                 </div>
               </div>
-              @if (auth.isLoggedIn() && !isOwner) {
+              @if (auth.isLoggedIn() && !isOwner && offer.isActive) {
                 <button class="sbh-btn sbh-btn--stroked sbh-btn--sm"
                         (click)="showRequestForm = !showRequestForm">
                   <span class="material-icons-outlined" style="font-size:18px">send</span>
@@ -123,7 +123,7 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
             </ul>
 
             <!-- Request form inline -->
-            @if (showRequestForm) {
+            @if (showRequestForm && offer.isActive) {
               <div class="request-form-card">
                 <h2 class="detail__h2" style="margin-top:0">Trimite o cerere</h2>
                 <form [formGroup]="requestForm" (ngSubmit)="sendRequest()">
@@ -173,11 +173,18 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
               }
 
               @if (auth.isLoggedIn() && !isOwner) {
-                <button class="sbh-btn sbh-btn--accent sbh-btn--full"
-                        style="margin-top:16px;height:52px"
-                        (click)="showRequestForm = true">
-                  Trimite cerere
-                </button>
+                @if (offer.isActive) {
+                  <button class="sbh-btn sbh-btn--accent sbh-btn--full"
+                          style="margin-top:16px;height:52px"
+                          (click)="showRequestForm = true">
+                    Trimite cerere
+                  </button>
+                } @else {
+                  <div class="book__taken">
+                    <span class="material-icons-outlined">lock</span>
+                    Sesiune rezervată
+                  </div>
+                }
                 <button class="sbh-btn sbh-btn--stroked sbh-btn--full"
                         style="margin-top:8px"
                         (click)="toggleFavorite()">
@@ -351,6 +358,14 @@ import { avatarStyle, initials } from '../../../shared/utils/avatar.utils';
     .book__fee {
       display: flex; justify-content: space-between;
       font-size: 13px; color: var(--text-muted); margin-top: 6px;
+    }
+    .book__taken {
+      margin-top: 16px; height: 52px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: var(--radius-md); color: var(--text-muted);
+      font-weight: 600; font-size: 15px;
+      .material-icons-outlined { font-size: 20px; }
     }
 
     @media (max-width: 980px) {

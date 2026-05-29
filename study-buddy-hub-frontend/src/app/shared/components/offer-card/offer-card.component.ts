@@ -47,6 +47,12 @@ import { avatarStyle, initials } from '../../utils/avatar.utils';
             <span class="material-icons-outlined">{{ sessionIcon }}</span>
             {{ offer.sessionType | sessionTypeLabel }}
           </span>
+          @if (!offer.isActive) {
+            <span class="sbh-chip sbh-chip--success">
+              <span class="material-icons-outlined" style="font-size:14px">check_circle</span>
+              Platită
+            </span>
+          }
         </div>
       </div>
 

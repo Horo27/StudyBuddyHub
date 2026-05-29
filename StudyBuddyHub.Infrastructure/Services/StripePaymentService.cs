@@ -99,7 +99,11 @@ namespace StudyBuddyHub.Infrastructure.Services
             Event stripeEvent;
             try
             {
-                stripeEvent = EventUtility.ConstructEvent(payload, stripeSignature, webhookSecret);
+                stripeEvent = EventUtility.ConstructEvent(
+                    payload,
+                    stripeSignature,
+                    webhookSecret,
+                    throwOnApiVersionMismatch: false);
             }
             catch (StripeException ex)
             {
