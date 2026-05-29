@@ -2,16 +2,11 @@
 
 Aplicație web full-stack pentru studenți — platformă de anunțuri pentru meditații și sesiuni de studiu colaborativ, cu plăți Stripe și notificări în timp real.
 
-## Capturi de ecran
-
-### Pagina principală
-![Home](docs/screenshots/home.png)
-
-### Publicare ofertă
-![Creare ofertă](docs/screenshots/create-offer.png)
-
-### Detalii ofertă
-![Detalii ofertă](docs/screenshots/offer-details.png)
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="Pagina principală cu lista de oferte" width="85%"/>
+  <br/>
+  <em>Pagina principală — listă de oferte cu filtrare</em>
+</p>
 
 ## Stack tehnic
 
@@ -55,6 +50,12 @@ e2e                          ← Playwright end-to-end tests
 | PaymentsController | `/api/payments` | parțial (webhook public) |
 | AdminController | `/api/admin` | Admin only |
 
+<p align="center">
+  <img src="docs/screenshots/create-offer.png" alt="Formular de creare ofertă" width="70%"/>
+  <br/>
+  <em>Formular de creare ofertă — POST <code>/api/studyoffers</code></em>
+</p>
+
 ## SignalR Hubs
 
 | Hub | Endpoint | Autentificare |
@@ -79,6 +80,12 @@ Notificările sunt emise prin `SignalRNotificationService` la evenimente precum 
 | Plată reușită | `/payment/success` | — |
 | Plată anulată | `/payment/cancel` | — |
 | Admin panel | `/admin` | Admin |
+
+<p align="center">
+  <img src="docs/screenshots/offer-details.png" alt="Pagina cu detalii ofertă" width="80%"/>
+  <br/>
+  <em>Detalii ofertă (<code>/offers/:id</code>) — informații complete & trimitere cerere</em>
+</p>
 
 ## Pași de rulare
 
