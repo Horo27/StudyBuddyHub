@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { StudyRequestsService } from '../../../core/services/study-requests.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { StudyRequest } from '../../../core/models/study-request.models';
 
 @Component({
@@ -67,14 +68,30 @@ import { StudyRequest } from '../../../core/models/study-request.models';
                 }
                 <div class="request-card__foot">
                   <span class="request-card__date">{{ req.createdAt | date:'d MMM yyyy' }}</span>
-                  @if (req.status === 'Pending') {
-                    <button class="sbh-btn sbh-btn--stroked sbh-btn--sm"
-                            style="color:#c62828;border-color:#c62828"
-                            (click)="cancel(req.id)">
-                      <span class="material-icons-outlined" style="font-size:16px">cancel</span>
-                      Anulează
-                    </button>
-                  }
+                  <div style="display:flex;gap:8px;align-items:center">
+                    @if (req.status === 'Pending') {
+                      <button class="sbh-btn sbh-btn--stroked sbh-btn--sm"
+                              style="color:#c62828;border-color:#c62828"
+                              (click)="cancel(req.id)">
+                        <span class="material-icons-outlined" style="font-size:16px">cancel</span>
+                        Anulează
+                      </button>
+                    }
+                    @if (req.status === 'Accepted' && req.paymentStatus === 'Unpaid') {
+                      <button class="sbh-btn sbh-btn--raised sbh-btn--sm pay-btn"
+                              [disabled]="paying()"
+                              (click)="pay(req.id)">
+                        <span class="material-icons-outlined" style="font-size:16px">payment</span>
+                        Plătește sesiunea
+                      </button>
+                    }
+                    @if (req.paymentStatus === 'Paid') {
+                      <span class="sbh-chip sbh-chip--success" style="font-size:12px">
+                        <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle">check_circle</span>
+                        Plătit
+                      </span>
+                    }
+                  </div>
                 </div>
               </div>
             }
@@ -207,14 +224,19 @@ import { StudyRequest } from '../../../core/models/study-request.models';
     }
     .spinner-container { display: flex; justify-content: center; padding: 60px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .pay-btn { background: var(--coral-600) !important; color: white !important; }
+    .pay-btn:hover:not([disabled]) { background: var(--coral-700, #b83a28) !important; }
+    .pay-btn[disabled] { opacity: .6; cursor: not-allowed; }
     @media (max-width: 600px) { .dashboard-page { padding: 20px 18px 60px; } }
   `]
 })
 export class MyRequestsComponent implements OnInit {
   private readonly requestsService = inject(StudyRequestsService);
+  private readonly paymentService = inject(PaymentService);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly activeTab = signal<'sent' | 'received'>('sent');
+  readonly paying = signal(false);
   sentRequests: StudyRequest[] = [];
   receivedRequests: StudyRequest[] = [];
   loadingSent = false;
@@ -259,6 +281,19 @@ export class MyRequestsComponent implements OnInit {
         this.snackBar.open('Cerere anulată', 'OK', { duration: 3000 });
       },
       error: err => this.snackBar.open(err.error?.message ?? 'Eroare', 'OK', { duration: 3000 })
+    });
+  }
+
+  pay(requestId: number): void {
+    this.paying.set(true);
+    this.paymentService.createCheckout(requestId).subscribe({
+      next: ({ url }) => {
+        window.location.href = url;
+      },
+      error: err => {
+        this.paying.set(false);
+        this.snackBar.open(err.error?.message ?? 'Eroare la inițializarea plății', 'OK', { duration: 4000 });
+      }
     });
   }
 

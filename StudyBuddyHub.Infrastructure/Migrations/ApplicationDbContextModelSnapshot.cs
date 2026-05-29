@@ -330,12 +330,18 @@ namespace StudyBuddyHub.Infrastructure.Migrations
                     b.Property<int>("OfferId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RequesterId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StripeSessionId")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

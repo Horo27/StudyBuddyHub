@@ -35,6 +35,8 @@ services:
       Jwt__Issuer: "StudyBuddyHub"
       Jwt__Audience: "StudyBuddyHub"
       FrontendUrl: "https://StudyBuddyHub.student-dev.ro"
+      Stripe__SecretKey: "sk_test_51Tc7pP3jf6DHVWeLmdVQvxxKSqfmxvQ3Fi9kz902TMtsDFiNBHrEKrbJ3jSMKEADiMohrGbzzPpcx2BPRFKRtouE008q2BemOv"
+      Stripe__WebhookSecret: "whsec_a10cbb0be34de5e3847964397a34aff7f490be44ad98869622d57a171f79336b"
     expose: ["8080"]
     depends_on:
       db:

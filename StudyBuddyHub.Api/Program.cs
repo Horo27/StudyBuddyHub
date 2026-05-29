@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
 using StudyBuddyHub.Api.Hubs;
 using StudyBuddyHub.Api.Middleware;
 using StudyBuddyHub.Api.Services;
@@ -23,7 +24,9 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -120,6 +123,12 @@ builder.Services.AddScoped<IStudyRequestService, StudyRequestService>();
 builder.Services.AddScoped<IFavoriteOfferService, FavoriteOfferService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<INotificationService, SignalRNotificationService>();
+builder.Services.AddScoped<IPaymentService, StripePaymentService>();
+
+// Configure Stripe secret key globally
+StripeConfiguration.ApiKey = builder.Configuration["Stripe__SecretKey"]
+    ?? builder.Configuration["Stripe:SecretKey"]
+    ?? "sk_test_placeholder";
 
 // Configure CORS - allow frontend (default localhost:4200) and enable credentials for dev
 builder.Services.AddCors(options =>
@@ -137,8 +146,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
@@ -146,6 +156,13 @@ using (var scope = app.Services.CreateScope())
 
     await SeedData.InitializeAsync(context, userManager, roleManager);
 }
+
+// Enable buffering so webhook can re-read the raw body for Stripe signature validation
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();

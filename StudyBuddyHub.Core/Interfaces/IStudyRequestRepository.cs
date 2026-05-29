@@ -10,6 +10,7 @@ namespace StudyBuddyHub.Core.Interfaces
         Task<IEnumerable<StudyRequest>> GetAllAsync();
         Task<IEnumerable<StudyRequest>> GetByRequesterIdAsync(string requesterId);
         Task<IEnumerable<StudyRequest>> GetByOfferOwnerIdAsync(string ownerId);
+        Task<IEnumerable<StudyRequest>> GetByOfferIdAsync(int offerId);
         Task<StudyRequest> AddAsync(StudyRequest entity);
         Task UpdateAsync(StudyRequest entity);
         Task DeleteAsync(StudyRequest entity);

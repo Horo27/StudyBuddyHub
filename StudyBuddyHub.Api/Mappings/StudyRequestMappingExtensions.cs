@@ -12,6 +12,7 @@ namespace StudyBuddyHub.Api.Mappings
                 Id = request.Id,
                 Message = request.Message,
                 Status = request.Status,
+                PaymentStatus = request.PaymentStatus,
                 CreatedAt = request.CreatedAt,
                 OfferId = request.OfferId,
                 OfferTitle = request.Offer?.Title ?? "Unknown",

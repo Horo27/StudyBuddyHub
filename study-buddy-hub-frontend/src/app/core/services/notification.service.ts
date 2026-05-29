@@ -18,8 +18,10 @@ export class NotificationService implements OnDestroy {
   private unreadCountSubject = new BehaviorSubject<number>(0);
   unreadCount$ = this.unreadCountSubject.asObservable();
 
-  connect(): void {
-    if (this.connection) return;
+  async connect(): Promise<void> {
+    if (this.connection) {
+      await this.disconnect();
+    }
 
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.hubUrl}/notifications`, {
@@ -44,9 +46,9 @@ export class NotificationService implements OnDestroy {
     this.connection.start().catch(err => console.error('SignalR connection error:', err));
   }
 
-  disconnect(): void {
+  async disconnect(): Promise<void> {
     if (this.connection) {
-      this.connection.stop();
+      await this.connection.stop();
       this.connection = null;
     }
     this.notificationsSubject.next([]);

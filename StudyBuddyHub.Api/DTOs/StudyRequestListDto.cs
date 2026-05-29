@@ -8,6 +8,7 @@ namespace StudyBuddyHub.Api.DTOs
         public int Id { get; set; }
         public string? Message { get; set; }
         public RequestStatus Status { get; set; }
+        public PaymentStatus PaymentStatus { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public int OfferId { get; set; }

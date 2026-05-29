@@ -54,6 +54,16 @@ namespace StudyBuddyHub.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<StudyRequest>> GetByOfferIdAsync(int offerId)
+        {
+            return await _context.StudyRequests
+                .Include(r => r.Offer)
+                .ThenInclude(o => o.Subject)
+                .Include(r => r.Requester)
+                .Where(r => r.OfferId == offerId)
+                .ToListAsync();
+        }
+
         public async Task<StudyRequest> AddAsync(StudyRequest entity)
         {
             _context.StudyRequests.Add(entity);

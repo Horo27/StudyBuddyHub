@@ -50,6 +50,14 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
   {
+    path: 'payment/success',
+    loadComponent: () => import('./features/payment/payment-success.component').then(m => m.PaymentSuccessComponent)
+  },
+  {
+    path: 'payment/cancel',
+    loadComponent: () => import('./features/payment/payment-cancel.component').then(m => m.PaymentCancelComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
