@@ -1,23 +1,23 @@
 # StudyBuddyHub
 
-Aplicație web full-stack pentru studenți — platformă de anunțuri pentru meditații și sesiuni de studiu colaborativ, cu plăți Stripe și notificări în timp real.
+Full-stack web application for students — a listings platform for tutoring and collaborative study sessions, with Stripe payments and real-time notifications.
 
 <p align="center">
-  <img src="docs/screenshots/home.png" alt="Pagina principală cu lista de oferte" width="85%"/>
+  <img src="docs/screenshots/home.png" alt="Home page with the list of offers" width="85%"/>
   <br/>
-  <em>Pagina principală — listă de oferte cu filtrare</em>
+  <em>Home page — list of offers with filtering</em>
 </p>
 
-## Stack tehnic
+## Tech Stack
 
 - **Backend**: ASP.NET Core 10 Web API, EF Core (Npgsql), ASP.NET Core Identity, JWT, SignalR
-- **Frontend**: Angular 19, Angular Material (tema Indigo/Pink), standalone components, lazy loading
-- **Baza de date**: PostgreSQL 17
-- **Plăți**: Stripe Checkout + Webhooks
+- **Frontend**: Angular 19, Angular Material (Indigo/Pink theme), standalone components, lazy loading
+- **Database**: PostgreSQL 17
+- **Payments**: Stripe Checkout + Webhooks
 - **E2E**: Playwright
-- **Containerizare**: Docker + Docker Compose (Nginx pentru frontend)
+- **Containerization**: Docker + Docker Compose (Nginx for the frontend)
 
-## Arhitectură backend
+## Backend Architecture
 
 ```
 StudyBuddyHub.Api            ← Controllers, DTOs, Hubs, Middleware, Mappings
@@ -27,78 +27,78 @@ StudyBuddyHub.Tests          ← xUnit Tests
 e2e                          ← Playwright end-to-end tests
 ```
 
-## Entități
+## Entities
 
-| Entitate        | Relații |
-|-----------------|---------|
-| ApplicationUser | 1-N StudyOffer, 1-N StudyRequest, N-N StudyOffer (prin FavoriteOffer) |
+| Entity          | Relationships |
+|-----------------|---------------|
+| ApplicationUser | 1-N StudyOffer, 1-N StudyRequest, N-N StudyOffer (via FavoriteOffer) |
 | StudyOffer      | N-1 User, N-1 Subject, 1-N StudyRequest |
 | StudyRequest    | N-1 StudyOffer, N-1 User |
 | Subject         | 1-N StudyOffer |
 | FavoriteOffer   | N-1 User, N-1 StudyOffer |
 | Role            | Identity |
 
-## Controllere API
+## API Controllers
 
-| Controller | Route | Protejat |
+| Controller | Route | Protected |
 |---|---|---|
-| AuthController | `/api/auth` | parțial |
-| StudyOffersController | `/api/studyoffers` | parțial |
-| StudyRequestsController | `/api/studyrequests` | complet |
-| SubjectsController | `/api/subjects` | nu |
-| FavoritesController | `/api/favorites` | complet |
-| PaymentsController | `/api/payments` | parțial (webhook public) |
+| AuthController | `/api/auth` | partially |
+| StudyOffersController | `/api/studyoffers` | partially |
+| StudyRequestsController | `/api/studyrequests` | fully |
+| SubjectsController | `/api/subjects` | no |
+| FavoritesController | `/api/favorites` | fully |
+| PaymentsController | `/api/payments` | partially (public webhook) |
 | AdminController | `/api/admin` | Admin only |
 
 <p align="center">
-  <img src="docs/screenshots/create-offer.png" alt="Formular de creare ofertă" width="70%"/>
+  <img src="docs/screenshots/create-offer.png" alt="Create offer form" width="70%"/>
   <br/>
-  <em>Formular de creare ofertă — POST <code>/api/studyoffers</code></em>
+  <em>Create offer form — POST <code>/api/studyoffers</code></em>
 </p>
 
 ## SignalR Hubs
 
-| Hub | Endpoint | Autentificare |
+| Hub | Endpoint | Authentication |
 |---|---|---|
 | NotificationHub | `/hubs/notifications` | JWT (via `access_token` query) |
 
-Notificările sunt emise prin `SignalRNotificationService` la evenimente precum primirea sau acceptarea unei cereri.
+Notifications are emitted through `SignalRNotificationService` on events such as receiving or accepting a request.
 
-## Pagini frontend
+## Frontend Pages
 
-| Pagină | Rută | Guard |
+| Page | Route | Guard |
 |---|---|---|
-| Home / Oferte | `/` | — |
+| Home / Offers | `/` | — |
 | Login | `/login` | — |
 | Register | `/register` | — |
-| Detalii ofertă | `/offers/:id` | — |
-| Creare ofertă | `/offers/create` | Auth |
-| Editare ofertă | `/offers/:id/edit` | Auth |
-| Profil | `/profile` | Auth |
-| Ofertele mele | `/dashboard/my-offers` | Auth |
-| Cererile mele | `/dashboard/my-requests` | Auth |
-| Plată reușită | `/payment/success` | — |
-| Plată anulată | `/payment/cancel` | — |
+| Offer details | `/offers/:id` | — |
+| Create offer | `/offers/create` | Auth |
+| Edit offer | `/offers/:id/edit` | Auth |
+| Profile | `/profile` | Auth |
+| My offers | `/dashboard/my-offers` | Auth |
+| My requests | `/dashboard/my-requests` | Auth |
+| Payment successful | `/payment/success` | — |
+| Payment canceled | `/payment/cancel` | — |
 | Admin panel | `/admin` | Admin |
 
 <p align="center">
-  <img src="docs/screenshots/offer-details.png" alt="Pagina cu detalii ofertă" width="80%"/>
+  <img src="docs/screenshots/offer-details.png" alt="Offer details page" width="80%"/>
   <br/>
-  <em>Detalii ofertă (<code>/offers/:id</code>) — informații complete & trimitere cerere</em>
+  <em>Offer details (<code>/offers/:id</code>) — full information & request submission</em>
 </p>
 
-## Pași de rulare
+## Getting Started
 
-### Prerequisite
+### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Node.js 20+](https://nodejs.org/) și npm
-- [PostgreSQL 17](https://www.postgresql.org/download/) (sau Docker)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (opțional, pentru rulare containerizată)
+- [Node.js 20+](https://nodejs.org/) and npm
+- [PostgreSQL 17](https://www.postgresql.org/download/) (or Docker)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (optional, for containerized runs)
 
-### Variabile de mediu
+### Environment Variables
 
-Creează un fișier `.env` în rădăcina proiectului (folosit de `docker-compose`):
+Create a `.env` file in the project root (used by `docker-compose`):
 
 ```env
 POSTGRES_DB=studybuddyhub
@@ -112,29 +112,29 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
 
-### Opțiunea 1 — Docker Compose (recomandat)
+### Option 1 — Docker Compose (recommended)
 
 ```bash
-docker network create studlab_net   # o singură dată
+docker network create studlab_net   # one time only
 docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
 # API:      http://localhost:8080
 # Frontend: http://localhost:4200
 ```
 
-### Opțiunea 2 — Rulare manuală
+### Option 2 — Manual Run
 
 **Backend:**
 
 ```bash
 cd StudyBuddyHub.Api
 dotnet run
-# API disponibil la http://localhost:8080
-# Swagger UI la http://localhost:8080/swagger
+# API available at http://localhost:8080
+# Swagger UI at http://localhost:8080/swagger
 ```
 
-Baza de date și seed-ul se aplică automat la prima rulare. Datele seed includ:
+The database and seed data are applied automatically on first run. The seed data includes:
 - Admin: `admin@studybuddy.com` / `Admin123!`
-- 8 materii predefinite
+- 8 predefined subjects
 
 **Frontend:**
 
@@ -142,38 +142,38 @@ Baza de date și seed-ul se aplică automat la prima rulare. Datele seed includ:
 cd study-buddy-hub-frontend
 npm install
 npm start
-# Frontend la http://localhost:4200
+# Frontend at http://localhost:4200
 ```
 
-**Teste E2E (Playwright):**
+**E2E Tests (Playwright):**
 
 ```bash
 cd e2e
 npm install
 npx playwright install
 npm test            # headless
-npm run test:headed # cu browser vizibil
+npm run test:headed # with visible browser
 npm run test:ui     # UI mode
 ```
 
-## Credențiale implicite
+## Default Credentials
 
-| Email | Parolă | Rol |
+| Email | Password | Role |
 |---|---|---|
 | admin@studybuddy.com | Admin123! | Admin |
 
-## Funcționalități implementate
+## Implemented Features
 
-- Autentificare JWT cu roluri (Admin, Student)
-- CRUD complet StudyOffer cu filtrare
-- Trimitere/acceptare/respingere cereri de participare
-- Favorite (relație N-N User ↔ StudyOffer)
-- Plăți Stripe Checkout + webhook pentru confirmare
-- Notificări în timp real prin SignalR (Observer pattern)
-- Panou admin (statistici, gestiune utilizatori)
-- Middleware global de excepții (JSON 400/403/404/500)
-- Logging cu `ILogger<T>`
-- Protected routes cu Angular Guards
-- HTTP Interceptor pentru JWT
-- Formulare cu validare client-side
-- Suite Playwright pentru fluxurile principale (auth, offers, dashboard, payment, admin)
+- JWT authentication with roles (Admin, Student)
+- Full CRUD for StudyOffer with filtering
+- Sending/accepting/rejecting participation requests
+- Favorites (N-N relationship User ↔ StudyOffer)
+- Stripe Checkout payments + webhook for confirmation
+- Real-time notifications via SignalR (Observer pattern)
+- Admin panel (statistics, user management)
+- Global exception middleware (JSON 400/403/404/500)
+- Logging with `ILogger<T>`
+- Protected routes with Angular Guards
+- HTTP Interceptor for JWT
+- Forms with client-side validation
+- Playwright suite for the main flows (auth, offers, dashboard, payment, admin)
